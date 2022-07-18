@@ -2,6 +2,13 @@
   
 docker创建主从模式的数据库实例  
 需要一个主节点、一个从节点
+https://www.freesion.com/article/3931408189/
+```
+docker run --name mysql-master -p 3306:3306 -e MYSQL_ROOT_PASSWORD=12345678 -d mysql:latest
+docker run --name mysql-slave -p 3307:3306 -e MYSQL_ROOT_PASSWORD=12345678 -d mysql:latest
+```
+![图片(./res/20220715235445.png)
+
 
 主节点查看状态
 ```
