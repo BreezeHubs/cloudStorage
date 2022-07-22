@@ -1,7 +1,7 @@
 function queryParams() {
-    var username = localStorage.getItem("username");
+    var userid = localStorage.getItem("userid");
     var token = localStorage.getItem("token");
-    return 'username=' + username + '&token=' + token;
+    return 'userid=' + userid + '&token=' + token;
 }
 
 String.prototype.format = function (args) {

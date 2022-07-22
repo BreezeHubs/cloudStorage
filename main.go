@@ -2,17 +2,24 @@ package main
 
 import (
 	"cloudStorage/handler"
+	"cloudStorage/util"
+	"fmt"
 	"net/http"
+	"strconv"
 )
 
 func main() {
-	http.HandleFunc("/file/upload", handler.UploadHandler)            //处理文件上传
-	http.HandleFunc("/file/upload/success", handler.UploadSucHandler) //处理文件上传成功
-	http.HandleFunc("/file/meta", handler.GetFileMetaHandler)         //处理获取文件元信息
-	http.HandleFunc("/file/metas", handler.GetFileMetasHandler)       //处理获取批量文件元信息
-	http.HandleFunc("/file/download", handler.DownloadHandler)        //处理文件下载
-	http.HandleFunc("/file/update", handler.FileMetaUpdateHandler)    //处理文件元信息更新
-	http.HandleFunc("/file/delete", handler.FileMetaDeleteHandler)    //处理文件元信息删除
+	NewRouter("/file/upload", "POST", HttpInterceptor(handler.UploadHandler))         //文件上传
+	NewRouter("/file/fastupload", "POST", HttpInterceptor(handler.FastUploadHandler)) //秒传文件
+	NewRouter("/file/list", "GET", HttpInterceptor(handler.ListHandler))              //文件列表
+	NewRouter("/file", "GET", HttpInterceptor(handler.GetFileHandler))                //文件信息
+	NewRouter("/file/download", "GET", HttpInterceptor(handler.DownloadHandler))      //文件下载
+	NewRouter("/file/update", "POST", HttpInterceptor(handler.FileUpdateHandler))     //文件信息更新
+	NewRouter("/file/delete", "GET", HttpInterceptor(handler.FileDeleteHandler))      //文件删除
+
+	NewRouter("/user/signup", "POST", handler.SignupHandler)            //用户注册
+	NewRouter("/user/signin", "POST", handler.SigninHandler)            //用户登录
+	NewRouter("/user", "GET", HttpInterceptor(handler.UserInfoHandler)) //用户信息
 
 	//静态文件服务器
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
@@ -20,4 +27,35 @@ func main() {
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		panic("failed to start server, err:" + err.Error())
 	}
+}
+
+func NewRouter(url string, method string, handler func(http.ResponseWriter, *http.Request)) {
+	http.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == method {
+			fmt.Println("OK " + url + " " + "[" + method + "]")
+			handler(w, r)
+		} else {
+			fmt.Println("404 " + url + " " + "[" + method + "]")
+			w.WriteHeader(http.StatusNotFound)
+		}
+	})
+}
+
+func HttpInterceptor(h http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			r.ParseForm()
+			userid, _ := strconv.Atoi(r.Form.Get("userid"))
+			token := r.Form.Get("token")
+
+			//校验token
+			if b := util.ValidToken(userid, token); !b {
+				util.ErrorResponse(w, "Invalid token")
+				return
+			}
+
+			r.Header.Set("userid", r.Form.Get("userid"))
+			h(w, r)
+		},
+	)
 }
