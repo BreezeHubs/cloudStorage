@@ -21,6 +21,11 @@ func main() {
 	NewRouter("/user/signin", "POST", handler.SigninHandler)            //用户登录
 	NewRouter("/user", "GET", HttpInterceptor(handler.UserInfoHandler)) //用户信息
 
+	//分块上传接口
+	NewRouter("/file/mpupload/init", "GET", HttpInterceptor(handler.InitialMultipartUploadHandler)) //初始化分块上传
+	NewRouter("/file/mpupload/uppart", "POST", HttpInterceptor(handler.UploadPartHandler))          //上传文件分块
+	NewRouter("/file/mpupload/complete", "POST", HttpInterceptor(handler.CompleteUploadHander))     //通知上传合并
+
 	//静态文件服务器
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
