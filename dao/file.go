@@ -106,7 +106,18 @@ func UpdateFile(filehash string, f *TableFile) error {
 		"update tbl_file set file_hash=?,file_name=?,file_size=?,file_addr=? where file_hash=?",
 		f.FileHash, f.FileName, f.FileSize, f.FileAddr, filehash,
 	); err != nil {
-		return errors.Wrap(err, "DeleteFile s.Exec")
+		return errors.Wrap(err, "UpdateFile s.Exec")
+	}
+	return nil
+}
+
+func UpdateFileLocation(filehash string, fileaddr string) error {
+	if _, err := mydb.Exec(
+		mydb.DBWriteConn(),
+		"update tbl_file set file_addr=? where file_hash=?",
+		fileaddr, filehash,
+	); err != nil {
+		return errors.Wrap(err, "UpdateFileLocation s.Exec")
 	}
 	return nil
 }

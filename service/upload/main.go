@@ -9,13 +9,14 @@ import (
 )
 
 func main() {
-	NewRouter("/file/upload", "POST", HttpInterceptor(handler.UploadHandler))         //文件上传
-	NewRouter("/file/fastupload", "POST", HttpInterceptor(handler.FastUploadHandler)) //秒传文件
-	NewRouter("/file/list", "GET", HttpInterceptor(handler.ListHandler))              //文件列表
-	NewRouter("/file", "GET", HttpInterceptor(handler.GetFileHandler))                //文件信息
-	NewRouter("/file/download", "GET", HttpInterceptor(handler.DownloadHandler))      //文件下载
-	NewRouter("/file/update", "POST", HttpInterceptor(handler.FileUpdateHandler))     //文件信息更新
-	NewRouter("/file/delete", "GET", HttpInterceptor(handler.FileDeleteHandler))      //文件删除
+	NewRouter("/file/upload", "POST", HttpInterceptor(handler.UploadHandler))          //文件上传
+	NewRouter("/file/fastupload", "POST", HttpInterceptor(handler.FastUploadHandler))  //秒传文件
+	NewRouter("/file/list", "GET", HttpInterceptor(handler.ListHandler))               //文件列表
+	NewRouter("/file", "GET", HttpInterceptor(handler.GetFileHandler))                 //文件信息
+	NewRouter("/file/download", "GET", HttpInterceptor(handler.DownloadHandler))       //文件下载
+	NewRouter("/file/downloadurl", "GET", HttpInterceptor(handler.DownloadURLHandler)) //文件下载地址
+	NewRouter("/file/update", "POST", HttpInterceptor(handler.FileUpdateHandler))      //文件信息更新
+	NewRouter("/file/delete", "GET", HttpInterceptor(handler.FileDeleteHandler))       //文件删除
 
 	NewRouter("/user/signup", "POST", handler.SignupHandler)            //用户注册
 	NewRouter("/user/signin", "POST", handler.SigninHandler)            //用户登录
